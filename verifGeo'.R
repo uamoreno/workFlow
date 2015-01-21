@@ -1,11 +1,11 @@
-verifGeo <- function(root, routineType = "Colombia", inShapePath = NULL,
+verifGeo <- function(root, routineType = "Colombia", inShape = NULL,
                      set1Path = "set1/", set2Path = "set2/", set16Path = "set16/", mapsPath = "maps/"){
   
   # routineType = "Colombia"; inShape = NULL; set1Path = "set1/"; set2Path = "set2/"; set16Path = "set16/"; mapsPath = "maps/"
   
   ##  Variables interactivas:
   # set2 <- "cadena" indicando ubicacion archivo o tabla
-  # inShapePath <- "C:/IAvH/DINAVIS_set16/scriptsUniandes/prueba"
+  # inShape <- poligono de class() "SpatialPolygonsDataFrame" y con inShape@proj4string@projargs == "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   # routineType <- "cadena" indicando el tipo de filtro para hacer en los datos. "Colombia" or "World"    
   
   #rm(list = ls())  # Borra  todo lo que este en memoria
@@ -21,18 +21,9 @@ verifGeo <- function(root, routineType = "Colombia", inShapePath = NULL,
   library(rJava)
   library(R.utils)
   
-  if (!is.null(inShapePath)) {
-    zipFile <- list.files(path = inShapePath, pattern = ".zip")
-    unzip(zipfile = paste0(InShapePath, "/", zip), exdir = InShapePath)
-    shpFile <- list.files(path = inShapePath, pattern = ".dbf")
-    inShape <- readOGR(inShapePath, substr(shpFile, 0, nchar(shpFile)-4))
-  } else {
-    inShape <- NULL
-  }
-  
   load(paste0(root, "/", set1Path, "/set1.RData"))  
   
-  aoiFilter(registros, root, routineType = "Colombia", inShape, outPath = set2Path, taxPath = "maps/TAX.RData")
+  aoiFilter(registros, root, routineType = "Colombia", inShape = NULL, outPath = set2Path, taxPath = "maps/TAX.RData")
 
   load(paste0(root, "/", set2Path, "/set2.RData"))
   
@@ -535,3 +526,16 @@ VERIFICACION_PAISES <- function(set3, routineType = "Colombia", mapsPath = "/map
   rownames(resumen.salida) <- c("Total", "Pais", "Departamento", "Municipio", "Rural", "Altura")      
   write.csv(resumen.salida, paste0(root, "/", outPath, "/", "Resumen_salida_set16.csv"))
 }
+
+#### Ejecucion de la funcion
+
+## Variables interactivas
+refineType <- "species" # or 'region'
+refreshDB <- TRUE # or FALSE
+spRefine <- "Ara macao"
+inShape <- NULL # or poligono de class() == "SpatialPolygonsDataFrame" y con gisFilter@proj4string@projargs == "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+inFile <- NULL # or csv as "estructuraset16.csv"
+routineType <- "Colombia" # or 'World'
+
+verifGeo(root, routineType = "Colombia", inShape = NULL, set1Path = "set1/", set2Path = "set2/", set16Path = "set16/", mapsPath = "maps/")
+

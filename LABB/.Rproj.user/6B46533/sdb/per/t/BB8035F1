@@ -1,0 +1,16 @@
+{
+    "contents" : "# Cambia nombres de eBird originales\n# Trabaja sobre los archivos que no son originales\n\nsetwd(\"C:/IAvH/DINAVIS_set16/datos_originales/Originales/speciesLink/2014-11-13/\")\n(archivos <- list.files(pattern = \".txt\"))\nformato <- read.csv(\"C:/IAvH/DINAVIS_set16/Drive/datos_otros/Originales/eBird/formatoeBird.csv\",header = F)\ni <- 5\nfor (i in 1:length(archivos)){\n  archivo.i <- read.delim(archivos[i])\n  colnames(archivo.i) <- gsub(\"\\\\.\",\" \",colnames(archivo.i))\n  c <- 1\n  for (c in 1:ncol(formato.ebird)){\n    pos.c <- which(colnames(archivo.i)==formato.ebird[2,c]) \n    colnames(archivo.i)[pos.c] <- as.character(formato.ebird[1,c])\n  }\n  archivo.i$collector <- paste(archivo.i$\"FIRST NAME\", archivo.i$\"LAST NAME\")\n  write.table(archivo.i, archivos[i],row.names = FALSE, sep= \"\\t\")\n}",
+    "created" : 1415998850553.000,
+    "dirty" : false,
+    "encoding" : "ASCII",
+    "folds" : "",
+    "hash" : "4195087004",
+    "id" : "BB8035F1",
+    "lastKnownWriteTime" : 1416323345,
+    "path" : "C:/IAvH/DINAVIS_set16/scripts/fix_speciesLink.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

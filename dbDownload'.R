@@ -4,16 +4,15 @@ library(maptools)
 library(dismo)
   
 
-dbDownload <- function(root, outPath = "set0/", refineType = "species", refreshDB = FALSE, spRefine = NULL, 
-                       inShapePath = NULL, inFilePath = NULL){
+updateLBAB <- function(root, outPath = "set0/", refineType = "species", refreshDB = FALSE, spRefine = NULL, 
+                       inShape = NULL, inFile = NULL){
   
   # outPath = "set0/"; refineType = "species"; refreshDB = TRUE; spRefine = "Ara macao"; inShape = NULL; inFile = NULL
-  # InShapePath <- "C:/IAvH/DINAVIS_set16/scriptsUniandes/prueba"
   
   ##  Variables interactivas:
   # spRefine <- "cadena"
-  # InShapePath <- "shapeFile in WGS84"
-  # InFilePath <- "csv file with standard format"
+  # InShape <- "shapeFile in WGS84"
+  # InFile <- "csv file with standard format"
   
   library(maptools)
   library(raster)
@@ -21,12 +20,8 @@ dbDownload <- function(root, outPath = "set0/", refineType = "species", refreshD
   
   if (refreshDB == TRUE){ 
     if (refineType == "region") {
-      
-      zip <- list.files(path = inShapePath, pattern  = ".zip")
-      unzip(zipfile = paste0(inShapePath, "/", zip), exdir = inShapePath)
-      
-      shape.file <- gsub(".shp", "", list.files(path = InShapePath, pattern = ".shp"))
-      aoi <- readOGR(InShapePath, shape.file)
+  
+      aoi <- InShape
         
       registros <- updateGSDB(root, aoi)
     
@@ -76,8 +71,7 @@ dbDownload <- function(root, outPath = "set0/", refineType = "species", refreshD
       registros$occurrenceID <- as.character(registros$occurrenceID)
       registros$species <- cleanSciNames(registros$speciesOriginal)  
     } 
-  } else if (!is.null(inFilePath) & refreshDB != TRUE){
-    InFile <- read.csv(inFilePath)
+  } else if (!is.null(inFile) & refreshDB != TRUE){
     registros <- rbind(registros, InFile)
   }
 
@@ -647,3 +641,15 @@ grep2 <- function(y,line){
   pos <- which(tolower(line) == tolower(y))
   return(unique(c(unlist(multigrep),pos)))
 }
+
+#### Ejecucion de la funcion
+
+## Variables interactivas
+refineType <- "species" # or 'region'
+refreshDB <- TRUE # or FALSE
+spRefine <- "Ara macao"
+inShape <- NULL # or poligono de class() == "SpatialPolygonsDataFrame" y con gisFilter@proj4string@projargs == "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+inFile <- NULL # or csv as "estructuraset16.csv"
+routineType <- "Colombia" # or 'World'
+
+updateLBAB(root, outPath = "set0/", refineType = "species", refreshDB = TRUE, spRefine = "Ara macao", inShape = NULL, inFile = NULL)

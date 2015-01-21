@@ -1,0 +1,11 @@
+Package: LABB
+Type: Package
+Title: Set of functions that allows download, repair and depurate records.
+Version: 1.0
+Date: 2014-11-14
+Author: Ivan Gonzalez
+Maintainer: Who to complain to <igonzalez@humboldt.org.co>
+Description: This package contains functions that allow you download records, make a taxonomic 
+validation of scientific name and generate a geographical verification of record's reported locations 
+
+License: What license is it under?
