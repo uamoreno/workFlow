@@ -28,14 +28,109 @@
 # length(uniqueSp)
 # record <- uniqueSp[[22]]
 
+<<<<<<< HEAD
+library(rgdal)
+library(raster)
+library(RMySQL)
+library(rgeos)
+library(mongolite)
+library(httr)
+library(lubridate)
+
+## Functions -----
+#MSQ <- list(user = "root", password = "root", dbname = "col2015ac", host = "localhost")
+loadEnvironment <- function(.iucnShapes = 'D:/dbDownload/nwDB/spp&TaxonomyCol2015.csv',
+                            .iucnShapesPath = 'D:/dbDownload/nwDB/bySppClipCol',
+                            .citEndTables = 'D:/dbDownload/CIT_IUCN_END_INV_tables.RData',
+                            .noCor = 'D:/dbDownload/LayNE_noCorr.RData',
+                            .demAoi = 'D:/dbDownload/nwDB/demAoi.tif',
+                            .mpios = 'D:/dbDownload/nwDB/mpios.RData',
+                            .aoiPath = 'D:/dbDownload/nwDB',
+                            .aoiLayName = 'aoi',
+                            .tax = 'D:/dbDownload/nwDB/TAXnwDb.RData',
+                            .mongoUrl = "mongodb://biomodelos:#F#W4ff4uV-7Kjmd@192.168.11.105:27018/produccion",
+                            .mongoDb = "produccion",
+                            .mongoRec = "records", .mongoSpe = "species",
+                            .sqlUser = "root", .sqlpwd = "root", .sqlDb = "col2015ac",
+                            useProductionMDBConnection = FALSE){
+  
+  
+  # Load 'iucnShapes' table with the species name with available expert maps
+  iucnShapes <<- read.csv(.iucnShapes, as.is = TRUE)
+  
+  # Load 'iucnShapesPath' with location of available expert maps
+  iucnShapesPath <<- .iucnShapesPath
+  
+  # Load 'cit', 'end', 'inv', and 'cit' with species attributes
+  # of CITES appendix, endemic, invasive and threatened status
+  load(.citEndTables, envir = .GlobalEnv)
+  cit <<- cit; inv <<- inv; iuc <<- iuc #end <<- end;
+  
+  # Load 'layNE' raster stack with environmental values
+  # for 'biogeo' package outliers
+  load(.noCor)
+  layNE <<- layNE
+  demAoi <<- raster(.demAoi)
+  
+  # Load 'projUTM' with projected reference usefull for calculate planar distances
+  prjUTM <<- "+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  
+  # Load GIS layers for geographical verifications. Counties and DEM
+  # 'ALT', 'id', 'casco', 'mar', 'mpios1964', 'mpios1973', 'mpios1985',
+  # 'mpios1993', 'mpios2003', 'mpios2011', 'mpios2014' and 'paises' 
+  load(.mpios, envir = .GlobalEnv)
+  #ALT <<- ALT; casco <<- casco; id <<-id; mar <<- ma; mpios <<- mpios; proj <<- proj
+  
+  # Load tables with species names registered in Colombia from
+  # diferent sources compilations: 'TAX', 'TAXaccepNames', 'TAXNames', 'TAXsciNames'
+  load(.tax, envir = .GlobalEnv)
+  
+  # Load shapefile with region of interest
+  aoi <<- readOGR(.aoiPath, .aoiLayName, verbose = FALSE)
+  
+  ## Generate the database conection ----
+  conMSQ <<- dbConnect(dbDriver("MySQL"), user = .sqlUser, password = .sqlpwd, dbname = .sqlDb, host = "localhost")
+  
+
+  ## Generate mongo conections
+  if(useProductionMDBConnection){
+    mongoConectSpe <<- mongo(db = .mongoDb, collection = .mongoSpe, url = .mongoUrl, verbose = FALSE)
+    mongoConectRec <<- mongo(db = .mongoDb, collection = .mongoRec, url = .mongoUrl, verbose = FALSE)
+  }
+}
+
+=======
 ## Functions -----
 
 #MSQ <- list(user = "root", password = "root", dbname = "col2015ac", host = "localhost")
+>>>>>>> origin/master
 estimateUploadTime <- function(speciesField){
   tab.sp <- table(speciesField)
   #4.646x(^-0.488)
 }
 
+<<<<<<< HEAD
+uploadTable <- function(upData, DirName, aoi, .PrivateData = 0, .update = TRUE, OnlySp = FALSE,
+                        tempTaxValidation, dupDirRecords, errorPath, .Use = TRUE, .RecordsVisualizationPrivileges = 0,
+                        .sqlUser = "root", .sqlpwd = "root", .sqlDb = "col2015ac", UploadUser = NA, delMissCoords = FALSE, delOutCoords = FALSE){
+  # " - DEBUG 1";  DirName=dirName; .PrivateData = 0; .update = TRUE; OnlySp = FALSE; UploadUser='ig'; delMissCoords=TRUE;delOutCoords=TRUE
+  # " - DEBUG 2";  record = upData[[1]]; aoi = aoi; .PrivateData = .PrivateData; .update = .update; onlySp = OnlySp; .tempTaxValidation = tempTaxValidation;
+  # " - DEBUG 2";  .RecordsVisualizationPrivileges = 0;
+  # " - DEBUG 2";  .dupDirRecords = dupDirRecords; .tempDirRecords = errorPath; .Use = TRUE; .uploadUser = UploadUser; .delMissCoords = delMissCoords; .delOutCoords = delOutCoords
+  # " - DEBUG 3";  rec = record; .privateData = .PrivateData; .privateDataset = 0; fr.onlySp = onlySp; fr.use =.Use; .contributedRecord=contRecord = 'NULL'; fr.delMissCoords = .delMissCoords; fr.delOutCoords = .delOutCoords; .recordsVisualizationPrivileges = 0;  .tmpTax = 1; .tmpGeo = 1;
+
+
+  t0 <- Sys.time()
+  
+  # if(!OnlySp){
+  #   upNames <- names(upData)
+  #   .colNames <- c('ID', 'speciesName', 'origRecords', 'uploadedRecords', 'NewInSppTable', 'validName', 'seconds')
+  #   logTable <- data.frame(matrix(ncol = length(.colNames), nrow = length(upData)))
+  #   colnames(logTable) <- .colNames
+  # }
+
+  # i <- 1
+=======
 uploadTable <- function(upData, DirName, aoi, .PrivateData = 0, .update = TRUE, onlySp = FALSE,
                         tempTaxValidation, dupDirRecords, errorPath, .Use = TRUE, MSQ){
   t0 <- Sys.time()
@@ -47,18 +142,32 @@ uploadTable <- function(upData, DirName, aoi, .PrivateData = 0, .update = TRUE, 
     colnames(logTable) <- .colNames
   }
 
+>>>>>>> origin/master
   for(i in 1:length(upData)){
     cat('\n', DirName, 'record ', i, '-', nrow(upData), '|', round(i/length(upData)*100, 2), '%\n') # 
     t00 <- Sys.time()
     upLdError <- tryCatch(updateMongoDB(record = upData[[i]], # Record
                                         aoi = aoi, # Region of interest
                                         .PrivateData = .PrivateData, # Private data flag
+<<<<<<< HEAD
+                                        .recordsVisualizationPrivileges = .RecordsVisualizationPrivileges,
+                                        .update = .update, # Really update mongoDB? 
+                                        onlySp = OnlySp, # Run only 'species' collection flags
+                                        .tempTaxValidation = tempTaxValidation, # Temporal path
+                                        .dupDirRecords = dupDirRecords, # Duplicated path
+                                        .tempDirRecords = errorPath, # Error paths
+                                        .Use = .Use,
+                                        .uploadUser = UploadUser,
+                                        .delMissCoords = delMissCoords,
+                                        .delOutCoords = delOutCoords), #Use record?
+=======
                                         .update = .update, # Really update mongoDB? 
                                         onlySp = onlySp, # Run only 'species' collection flags
                                         .tempTaxValidation = tempTaxValidation, # Temporal path
                                         .dupDirRecords = dupDirRecords, # Duplicated path
                                         .tempDirRecords = errorPath, # Error paths
                                         .Use = .Use), #Use record?
+>>>>>>> origin/master
                           error = function (e) {e})
     if (any(class(upLdError) == 'error')){
       cat(paste0('\n Error found \n', upLdError, '\n'))
@@ -68,6 +177,18 @@ uploadTable <- function(upData, DirName, aoi, .PrivateData = 0, .update = TRUE, 
       unErr <- unlist(as.character(upLdError))
       msqErr <- grep('MySQL', unErr)
       if (any(msqErr)){
+<<<<<<< HEAD
+        conMSQ <<- dbConnect(dbDriver("MySQL"), user = .sqlUser, password = .sqlpwd, dbname = .sqlDb, host = "localhost")
+        
+      }
+    }
+    # if(!OnlySp){
+    #   nRec <- nrow(upData[[i]])
+    #   delayTime <- Sys.time() - t00
+    #   cat(nRec, delayTime, '\n')
+    #   logTable[i, c(i, upNames[i], nRec, upLdError$nRecUp, upLdError$newInsppTable, upLdError$isValidName, delayTime)] #c('ID', 'speciesName', 'origRecords', 'uploadedRecords', 'NewInSppTable', 'validName', 'seconds')
+    # }
+=======
         conMSQ <<- dbConnect(dbDriver("MySQL"), user = MSQ$user, password = MSQ$password, dbname = MSQ$dbname, host = MSQ$host)
         
       }
@@ -78,10 +199,42 @@ uploadTable <- function(upData, DirName, aoi, .PrivateData = 0, .update = TRUE, 
       cat(nRec, delayTime, '\n')
       logTable[i, c(i, upNames[i], nRec, upLdError$nRecUp, upLdError$newInsppTable, upLdError$isValidName, delayTime)] #c('ID', 'speciesName', 'origRecords', 'uploadedRecords', 'NewInSppTable', 'validName', 'seconds')
     }
+>>>>>>> origin/master
   }
   t1 <- Sys.time()
 }
 
+<<<<<<< HEAD
+updateMongoDB <- function(record, aoi, .PrivateData = 0, onlySp = FALSE, .Use = TRUE, .recordsVisualizationPrivileges = 0,
+                          .tempTaxValidation, .tempDirRecords, .dupDirRecords, .update = TRUE, contRecord = 'NULL', 
+                          .uploadUser = NA, .delMissCoords = FALSE, .delOutCoords = FALSE){
+  
+  # .PrivateData = 0; .Use = TRUE; .scriptMaxchar = .2
+  # .update = F
+  # contRecord = 'NULL'
+  # OnlySp = onlySp = fr.onlySp = FALSE
+  # .tempTaxValidation = tempTaxValidation; .dupDirRecords = dupDirRecords; .tempDirRecords = errorPath
+  # .privateData = 0; .override = 0; .url = ''; .recordsVisualizationPrivileges = 0; .privateDataset = 0; .tmpTax = 1; .tmpGeo = 1; .contributedRecord = FALSE
+
+  if (is.na(.uploadUser))  stop('provide upload user')
+  
+  ## Take the original record and structure it using some parameters
+  formRecord0 <- formatRecord(rec = record, aoi, .privateData = .PrivateData, fr.onlySp = onlySp, fr.use = .Use, 
+                             .contributedRecord = contRecord, fr.delMissCoords = .delMissCoords, fr.delOutCoords = .delOutCoords)
+  
+  onlySp <- formRecord0$fr.onlySp
+  formRecord <- formRecord0[[1]]
+  formRecord$recordsVisualizationPrivileges <- .recordsVisualizationPrivileges
+  formRecord$uploadUser <- .uploadUser
+  currentDateTime <- Sys.time()
+  formRecord$uploadDate <- ISOdate(year = year(currentDateTime), month = month(currentDateTime), day = day(currentDateTime),
+                                   hour = hour(currentDateTime), min = minute(currentDateTime), sec = second(currentDateTime),
+                                   tz = 'GMT')
+  
+  ## Check if species is not accepted and save it and the record in a temporal folder
+  isNotValidName <- is.na(formRecord$acceptedNameUsage[1]) | formRecord$acceptedNameUsage[1] == ''
+  if (isNotValidName){
+=======
 updateMongoDB <- function(record, aoi, .PrivateData = 0, onlySp = FALSE, .Use = TRUE, 
                           .tempTaxValidation, .tempDirRecords, .dupDirRecords, .update = TRUE, contRecord = 'NULL'){
   
@@ -99,6 +252,7 @@ updateMongoDB <- function(record, aoi, .PrivateData = 0, onlySp = FALSE, .Use = 
   ## Check if species is not accepted and save it and the record in a temporal folder
   isValidName <- is.na(formRecord$acceptedNameUsage[1]) | formRecord$acceptedNameUsage[1] == ''
   if (isValidName){
+>>>>>>> origin/master
     currSpe2Validate <- list.files(path = .tempTaxValidation, pattern = '.csv')
     csvFiles <- gsub('.csv', '', currSpe2Validate)
     if(!formRecord$species[1] %in% csvFiles){
@@ -115,22 +269,37 @@ updateMongoDB <- function(record, aoi, .PrivateData = 0, onlySp = FALSE, .Use = 
 
     ## Is the species new in mongoDB? If not then add it
     if (existsID$exist == FALSE){
+<<<<<<< HEAD
+      formRecord$taxID <- existsID$taxID[1]
+      if (.update == TRUE){
+        #formRecord$consecutivoID <- (mongoConectSpe$count() + 1)
+        updateSpeciesTable(rec = formRecord[1, ])
+=======
       formRecord$taxID <- existsID$taxID
       if (.update == TRUE){
         formRecord$consecutivoID <- (mongoConectSpe$count() + 1)
         updateSpeciesTable2(rec = formRecord[1, ])
+>>>>>>> origin/master
         cat(formRecord$species[1], 'upload in species table')
       } else{
         cat(formRecord$species[1], 'upload in species table (FAKE - change to .update = TRUE)')
       }
     } else {
+<<<<<<< HEAD
+      formRecord$taxID <- existsID$taxID[1]
+=======
       formRecord$taxID <- existsID$taxID
+>>>>>>> origin/master
       cat(formRecord$species[1], 'already in species table')
     }
     if (is.data.frame(formRecord)){
       if(.update == TRUE & onlySp == FALSE){
         formRecord$consecutivoID <- (mongoConectRec$count() + 1):(mongoConectRec$count() + nrow(formRecord)) 
+<<<<<<< HEAD
+        updateRecordsTable(rec = formRecord[!formRecord$dbDuplicate, ])
+=======
         updateRecordsTable2(rec = formRecord[!formRecord$dbDuplicate, ])
+>>>>>>> origin/master
         cat(' - ', formRecord$species[1], 'upload in records (',  nrow(formRecord[!formRecord$dbDuplicate, ]),') table ')
         if (any(formRecord$dbDuplicate)) {
           write.csv(formRecord[formRecord$dbDuplicate, ], paste0(.dupDirRecords, '/', formRecord$species[1],'-', basename(tempfile(formRecord$species[1])),'.csv'), row.names = FALSE, na = '')
@@ -143,11 +312,54 @@ updateMongoDB <- function(record, aoi, .PrivateData = 0, onlySp = FALSE, .Use = 
   #return(list(nRecUp = nrow(formRecord[!formRecord$dbDuplicate, ]),
   #            newInsppTable = !existsID$exist))
     
+<<<<<<< HEAD
+=======
   
+>>>>>>> origin/master
 }
 
 
 ## Insert record in species table
+<<<<<<< HEAD
+# updateSpeciesTable <- function(rec){
+#   taxCols <- c('species', 'originalGenus', 'originalSpecificEpithet',
+#                'taxonomicStatus', 'originalScientificNameID',
+#                'scientificNameID', 'acceptedNameUsage', 'scientificNameAuthorship',
+#                'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'specificEpithet',
+#                'nameAccordingTo', 'taxVerifSource', 'sppInCol', 'speciesInCountry', 'validName',
+#                'bmClass', 'invasive', 'endemic', 'iucn', 'cites', 'taxID', 'consecutivoID')
+#   
+#   speciesTable <- rec[, taxCols]
+#   speciesTable[1, is.na(speciesTable[1, ]) | speciesTable[1, ] == ''] <- 'NULL'
+#   
+#   mongoConectSpe$insert(speciesTable)
+# }
+# 
+# ## Insert record in records table
+# updateRecordsTable <- function(rec){
+#   taxCols <- c('species', 'originalGenus', 'originalSpecificEpithet',
+#                'taxonomicStatus', 'originalScientificNameID',
+#                'scientificNameID', 'acceptedNameUsage', 'scientificNameAuthorship',
+#                'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'specificEpithet',
+#                'nameAccordingTo', 'taxVerifSource', 'sppInCol', 'speciesInCountry', 'validName', 'taxID', 'consecutivoID')
+#   
+#   recordsTable <- rec[, c('species', 'acceptedNameUsage', 'taxID', 'consecutivoID', colnames(rec)[!(colnames(rec) %in% taxCols)])]
+#   recordsTable[1, is.na(recordsTable[1, ]) | recordsTable[1, ] == ''] <- 'NULL'
+#   colnames(recordsTable)[grep('collection', colnames(recordsTable))] <- 'colection'
+#   #mongoConectRec <- mongo(db = "records", collection = "records", url = "mongodb://192.168.11.81:27017", verbose = FALSE)
+#   mongoConectRec$insert(recordsTable)
+# }
+
+## Insert record in species table v2
+updateSpeciesTable <- function(rec){
+  # taxCols[taxCols %in% colnames(rec)]
+  # taxCols[!taxCols %in% sort(colnames(rec))]
+  speciesTable <- rec[, taxCols] # str(speciesTable[, sort(colnames(speciesTable))])
+  #speciesTable[1, is.na(speciesTable[1, ]) | speciesTable[1, ] == ''] <- 'NULL'
+  # mongoConectSpe$insert(speciesTable)
+  # insertObject <- jsonlite::toJSON(as.list(speciesTable), auto_unbox = TRUE)
+  # mongoConectSpe$insert(insertObject)
+=======
 updateSpeciesTable <- function(rec){
   taxCols <- c('species', 'originalGenus', 'originalSpecificEpithet',
                'taxonomicStatus', 'originalScientificNameID',
@@ -189,10 +401,32 @@ updateSpeciesTable2 <- function(rec){
   
   speciesTable <- rec[, taxCols]
   speciesTable[1, is.na(speciesTable[1, ]) | speciesTable[1, ] == ''] <- 'NULL'
+>>>>>>> origin/master
   mongoConectSpe$insert(speciesTable)
 }
 
 ## Insert record in records table v2
+<<<<<<< HEAD
+updateRecordsTable <- function(rec){
+  recordsTable <- rec[,  setdiff(colnames(rec), excludeColsFromRecords)]
+  # recordsTable[] <- lapply(recordsTable, function(x) {
+  #   bad <- which(is.na(x) | x == '')
+  #   if(any(bad)){
+  #     x[bad] <- 'NULL'
+  #   }
+  #   return(x)
+  # })
+  #mongoConectRec$insert(recordsTable)
+  
+  colnames(recordsTable)[grep('collection', colnames(recordsTable))] <- 'colection'
+  insertObject <- jsonlite::toJSON(as.list(recordsTable), auto_unbox = TRUE)
+  mongoConectSpe$insert(insertObject)
+}
+
+
+## Chek if the species alredy exists in mongoDB
+specAlreadyInDb <- function(rec){
+=======
 updateRecordsTable2 <- function(rec){
   excCols <- c("taxonomicStatus", "scientificNameAuthorship",
                "specificEpithet", "nameAccordingTo", "TaxVerifSource",
@@ -223,6 +457,7 @@ specAlreadyInDb <- function(rec){
                    'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'specificEpithet',
                    'nameAccordingTo', 'TaxVerifSource', 'sppInCol', 'speciesInCountry', 'validName')
   
+>>>>>>> origin/master
   mongoQ <- paste0('{"$or":[{"species":"', rec$species[1], '"}, {"acceptedNameUsage":"', rec$species[1],
                    '"}, {"species":"', rec$acceptedNameUsage[1], '", "acceptedNameUsage":"', rec$acceptedNameUsage[1], '"}]}')
   
@@ -246,6 +481,52 @@ specAlreadyInDb <- function(rec){
   }
 }
 
+<<<<<<< HEAD
+
+## Define columns
+
+excludeColsFromRecords <<- c("taxonomicStatus", "scientificNameAuthorship",
+             "specificEpithet", "nameAccordingTo", "taxVerifSource",
+             "kingdom", "phylum", "class", "order", "family", "genus", 
+             "sppInCol", "speciesInCountry", "validName", 
+             "bmClass", "invasive", "endemic", "iucn", "iucnSpeciesID", "amenazaNacional", "cites", "migratoryType",
+             "consecutivoID", "otherID", "withLat", "withLon", "recSizeBytes", "bigSizeRecord",
+             "hasTaxDoubt", "privateDataset", "tmpTax", "tmpGeo",  'recordsVisualizationPrivileges',
+             'uploadUser', 'uploadDate')
+
+# Taxonomic and requierd Cols for script. NA is given if absent
+
+reqCols <<- c("source", "occurrenceID", "species", "speciesOriginal", "continent", 
+             "country", "stateProvince", "county", "verbatimLocality","lat",
+             "lon","coordinateUncertaintyInMeters", "verbatimElevation","institutionCode", "collectionCode",
+             "catalogNumber", "basisOfRecord", "recordedBy", "earliestDateCollected", # "latestDateCollected",
+             "downloadDate", "resourceName", "resourceFolder","resourceIncorporationDate",
+             "privateData", "otherID")
+
+
+speciesTableCols <<- c("taxID","acceptedNameUsage","species",
+                      "specificEpithet", "genus","family","order","class","phylum", "kingdom",
+                      "endemic","invasive","validName","speciesInCountry","sppInCol","recordsVisualizationPrivileges",
+                      "bmClass","uploadUser","uploadDate","amenazaNacional","iucn")
+
+taxCols <<- c("species" ,"taxonomicStatus", "acceptedNameUsage", "scientificNameAuthorship",
+              "kingdom", "phylum", "class", "order", "family", "genus", "specificEpithet",
+              "nameAccordingTo", "taxVerifSource",
+              "sppInCol", "speciesInCountry", "validName", 
+              "bmClass", "invasive", "endemic", "iucn", "iucnSpeciesID", "amenazaNacional", "cites", "migratoryType",
+              "taxID", 'recordsVisualizationPrivileges', 'uploadUser', 'uploadDate')
+
+## Format the original record
+formatRecord <- function(rec, aoi, .privateData = .privateData, .override = FALSE, .url = '', fr.onlySp = FALSE,
+                         .recordsVisualizationPrivileges = 0, .privateDataset = 0, fr.use = TRUE,
+                         .tmpTax = 1, .tmpGeo = 1, .contributedRecord = 'NULL', fr.delMissCoords = FALSE, fr.delOutCoords = FALSE){
+  
+  #.privateData = 0; .override = 0; .url = ''; .recordsVisualizationPrivileges = 0; .privateDataset = 0; .tmpTax = 1; .tmpGeo = 1; .contributedRecord = FALSE
+  # fr.onlySp = FALSE
+  # rec <- .recT <- origRec <- record
+  
+  ## Create new formated record
+=======
 ## Define columns
 # Taxonomic and requierd Cols for script. NA is given if is absent
 taxCols <<- c('kingdom', 'phylum', 'class', 'order', 'family')
@@ -267,10 +548,53 @@ formatRecord <- function(rec, aoi, .privateData = .privateData, .override = FALS
   # rec <- .recT <- origRec <- record
   
     ## Create new formated record
+>>>>>>> origin/master
   if (is.null(rec$speciesOriginal)) rec$speciesOriginal <- rec$species
   nwRec <- nwRecFun(.rec = rec, .reqCols = reqCols)
   
   if (fr.onlySp == FALSE ){
+<<<<<<< HEAD
+    nwRec[, c('latNum', 'lonNum')] <- sapply(nwRec[, c('lat', 'lon')], as.numeric)
+    
+    # 1 Incomplet coords ----
+    badCoords <- is.na(nwRec$latNum) | is.na(nwRec$lonNum)
+    
+    if(any(badCoords)) {
+      message(paste0(length(which(badCoords)), ' (of ', nrow(nwRec), ') incomplete coordinates!'))
+    }
+    
+    if (fr.delMissCoords){
+      if(all(badCoords)){
+        nwRec <- nwRec[1, ]
+        nwRec$dbDuplicate <- TRUE
+        fr.onlySp <- TRUE
+      } else{
+        nwRec <- nwRec[!badCoords, ]
+      }
+    }
+    
+    nwRec$lon[is.na(nwRec$lon)] <- 0
+    nwRec$lat[is.na(nwRec$lat)] <- 0
+    
+    # 2 Coords in aoi ----
+    outRecs <- !(nwRec$lon > extent(aoi)@xmin & nwRec$lon < extent(aoi)@xmax &
+                         nwRec$lat > extent(aoi)@ymin & nwRec$lat < extent(aoi)@ymax)
+    
+    if(any(outRecs) & fr.delOutCoords){
+      if(all(outRecs)){
+        nwRec <- nwRec[1, ]
+        message('Non valid coordinates')
+        fr.onlySp <- TRUE
+        nwRec$dbDuplicate <- TRUE
+      } else{
+        nwRec <- nwRec[!outRecs, ]
+        rec <- rec[!outRecs, ]
+      }
+      cat('\n', length(outRecs), 'coordinates outside region of interest!\n')
+    }
+  }
+
+=======
     nwRec[, c('lat', 'lon')] <- sapply(nwRec[, c('lat', 'lon')], as.numeric)
     
     # 1 Incomplet coords ----
@@ -290,6 +614,7 @@ formatRecord <- function(rec, aoi, .privateData = .privateData, .override = FALS
       }
     }
   }
+>>>>>>> origin/master
   
   # Taxonomic validation ----
   nwRec$species <- cleanSciNames(y = nwRec$species)
@@ -348,10 +673,17 @@ formatRecord <- function(rec, aoi, .privateData = .privateData, .override = FALS
     nwRec <- dates(.rec = nwRec)
     
     # Override
+<<<<<<< HEAD
+    #nwRec$override <- .override
+    
+    # Visualization privileges in Biomodelos
+    nwRec$recordsVisualizationPrivileges <- .recordsVisualizationPrivileges
+=======
     nwRec$override <- .override
     
     # Visualization privileges in Biomodelos
     nwRec$visualizationPrivileges <- .visualizationPrivileges
+>>>>>>> origin/master
     
     # contributedRecord
     nwRec$contributedRecord <- .contributedRecord
@@ -381,16 +713,34 @@ formatRecord <- function(rec, aoi, .privateData = .privateData, .override = FALS
   
   nwRec <- sppCateg(.rec = nwRec)
   
+<<<<<<< HEAD
+  return(list(nwRec = nwRec, fr.onlySp = fr.onlySp))
+=======
   return(nwRec)
+>>>>>>> origin/master
 }
 
 # <- function(.rec){
 #   return(nwRec = .rec)
 # }
 
+<<<<<<< HEAD
+checkMandatoryFieldsSpecies <- function(.rec){
+  mandatoryFields <- .rec[1, speciesTableCols]
+  all(!is.na(mandatoryFields) | mandatoryFields != '')
+  return(nwRec = .rec)
+}
+
+sppCateg <- function(.rec){
+  .rec$bmClass <- .rec$cites <- .rec$migratoryType <- ''
+  .rec$iucn <- .rec$amenazaNacional <- 'NE'
+  .rec$invasive <-  .rec$endemic <- FALSE
+  .rec$iucnSpeciesID <- 0
+=======
 sppCateg <- function(.rec){
   .rec$bmClass <- .rec$iucn <- .rec$cites <- ''
   .rec$invasive <-  .rec$endemic <- FALSE
+>>>>>>> origin/master
   
   .rec$bmClass[grep('Mammalia', .rec$class)] <- 'mamiferos'
   .rec$bmClass[grep('Amphibia', .rec$class)] <- 'anfibios'
@@ -414,6 +764,21 @@ sppCateg <- function(.rec){
   }
   
   iuPos <- any(.rec$acceptedNameUsage %in% iuc$acceptedNameUsage)
+<<<<<<< HEAD
+  if (iuPos & !is.na(.rec$acceptedNameUsage)){
+    .rec$iucn <- iuc$Red.List.status[iuc$acceptedNameUsage %in% .rec$acceptedNameUsage][1]
+  } else {
+    iuPos <- any(.rec$acceptedNameUsage %in% iuc$sciName)
+    if (iuPos & !is.na(.rec$acceptedNameUsage)){
+      .rec$iucn <- iuc$Red.List.status[iuc$sciName %in% .rec$acceptedNameUsage][1]
+    } else {
+      iuPos <- any(.rec$species %in% iuc$acceptedNameUsage)
+      if (iuPos & !is.na(.rec$species)){
+        .rec$iucn <- iuc$Red.List.status[iuc$acceptedNameUsage %in% .rec$species][1]
+      } else {
+        iuPos <- any(.rec$species %in% iuc$sciName)
+        if (iuPos & !is.na(.rec$species)){
+=======
   if (iuPos){
     .rec$iucn <- iuc$Red.List.status[iuc$acceptedNameUsage %in% .rec$acceptedNameUsage][1]
   } else {
@@ -427,6 +792,7 @@ sppCateg <- function(.rec){
       } else {
         iuPos <- any(.rec$species %in% iuc$sciName)
         if (iuPos){
+>>>>>>> origin/master
           .rec$iucn <- iuc$Red.List.status[iuc$sciName %in% .rec$species][1]
         }
       }
@@ -434,6 +800,21 @@ sppCateg <- function(.rec){
   }
   
   citPos <- any(.rec$acceptedNameUsage %in% na.omit(cit$acceptedNameUsage))
+<<<<<<< HEAD
+  if (citPos & !is.na(.rec$acceptedNameUsage)){
+    .rec$cites <- cit$CurrentListing[cit$acceptedNameUsage %in% .rec$acceptedNameUsage][1]
+  } else {
+    citPos <- any(.rec$acceptedNameUsage %in% cit$FullName)
+    if (citPos & !is.na(.rec$acceptedNameUsage)){
+      .rec$cites <- cit$CurrentListing[cit$FullName %in% .rec$acceptedNameUsage][1]
+    } else {
+      citPos <- any(.rec$species %in% cit$acceptedNameUsage)
+      if (citPos & !is.na(.rec$species)){
+        .rec$cites <- cit$CurrentListing[cit$acceptedNameUsage %in% .rec$species][1]
+      } else {
+        citPos <- any(.rec$species %in% cit$FullName)
+        if (citPos & !is.na(.rec$species)){
+=======
   if (citPos){
     .rec$cites <- cit$CurrentListing[cit$acceptedNameUsage %in% .rec$acceptedNameUsage][1]
   } else {
@@ -447,17 +828,25 @@ sppCateg <- function(.rec){
       } else {
         citPos <- any(.rec$species %in% cit$FullName)
         if (citPos){
+>>>>>>> origin/master
           .rec$cites <- cit$CurrentListing[cit$FullName %in% .rec$species][1]
         }
       }
     }
   }
+<<<<<<< HEAD
+=======
   .rec$migratoryType <- NA
+>>>>>>> origin/master
   return(nwRec = .rec)
 }
 
 sppCategDifSpp <- function(.rec){
+<<<<<<< HEAD
+  .rec$bmClass <- .rec$iucn <- .rec$cites <- .rec$migratoryType <-  ''
+=======
   .rec$bmClass <- .rec$iucn <- .rec$cites <- ''
+>>>>>>> origin/master
   .rec$invasive <-  .rec$endemic <- FALSE
   
   .rec$bmClass[grep('Mammalia', .rec$class)] <- 'mamiferos'
@@ -523,6 +912,15 @@ sppCategDifSpp <- function(.rec){
 }
 
 
+<<<<<<< HEAD
+dates <- function(.rec){
+  
+  .rec$earliestDateCollected <- ifelse(.rec$earliestDateCollected == '', NA, .rec$earliestDateCollected)
+  #.rec$latestDateCollected <- ifelse(.rec$latestDateCollected == '', NA, .rec$latestDateCollected)
+  
+  Dates <- sapply(.rec[, c('earliestDateCollected')], # , 'latestDateCollected'. From apply to sapply
+                   function(y){
+=======
 
 dates <- function(.rec){
   
@@ -530,6 +928,7 @@ dates <- function(.rec){
   .rec$latestDateCollected <- ifelse(.rec$latestDateCollected == '', NA, .rec$latestDateCollected)
   
   Dates <- t(apply(.rec[, c('earliestDateCollected', 'latestDateCollected')], 1, function(y){
+>>>>>>> origin/master
     #y <- .rec[11, c('earliestDateCollected', 'latestDateCollected')]
     x <- na.omit(as.character(y))[1]
     if (length(x) == 0) return(NA)
@@ -551,11 +950,19 @@ dates <- function(.rec){
     # as.character(gsub('[a-zA-Z]| ', '', pDate))
     rDate <- c(y = year(pDate), m = month(pDate), d = day(pDate))
     return(rDate)
+<<<<<<< HEAD
+  })
+  
+  .rec$year <- Dates[1]
+  .rec$month <- Dates[2]
+  .rec$day <- Dates[3]
+=======
   }))
   
   .rec$yyyy <- Dates[, 1]
   .rec$mm <- Dates[, 2]
   .rec$dd <- Dates[, 3]
+>>>>>>> origin/master
   return(nwRec = .rec)
 }
 
@@ -850,7 +1257,11 @@ inUrbanArea <- function(.rec){
 }
 
 hasLocality <- function(.rec){
+<<<<<<< HEAD
+  .rec$hasLocality <- ifelse(is.na(.rec$verbatimLocality) | .rec$verbatimLocality == '', FALSE, TRUE)
+=======
   .rec$hasLocality <- ifelse(is.na(.rec$locality) | .rec$locality == '', FALSE, TRUE)
+>>>>>>> origin/master
   return(nwRec = .rec)
 }
 
@@ -869,6 +1280,22 @@ validName <- function(.rec){
 }
 
 interpretedElevation <- function(.rec, .rule = 'mean'){
+<<<<<<< HEAD
+  sep <- grep('-|/', .rec$verbatimElevation)
+  .rec$verbatimElevation[is.na(.rec$verbatimElevation)] <- '-'
+  if (any(sep)){
+    sepAlts <- sapply(.rec$verbatimElevation, USE.NAMES = FALSE, function(x) {
+      #  (x <- .rec$verbatimElevation[1])
+      sepAlts <- as.numeric(strsplit(gsub('[[:alpha:]]|\\.', '', x), '-|/')[[1]])
+      if(.rule == 'mean') z <- mean(sepAlts)
+      if(.rule == 'max')  z <- max(sepAlts)
+      if(.rule == 'min') z <- min(sepAlts)
+      return(z)
+    })
+    .rec$interpretedElevation <- sepAlts
+  } else {
+    .rec$interpretedElevation <- as.numeric(gsub('[[:alpha:]]', '', .rec$verbatimElevation))
+=======
   sep <- grep('-|/', .rec$alt)
   if (any(sep)){
     sepAlts <- as.numeric(strsplit(.rec$alt, '-|/')[[1]])
@@ -877,13 +1304,19 @@ interpretedElevation <- function(.rec, .rule = 'mean'){
     if(.rule == 'min') .rec$interpretedElevation <- min(sepAlts)
   } else {
     .rec$interpretedElevation <- as.numeric(gsub('[[:alpha:]]', '', .rec$alt))
+>>>>>>> origin/master
   }
   return(nwRec = .rec)
 }
 
 uncertanity <- function(.rec, thresh = 5000){
+<<<<<<< HEAD
+  numUnc <- as.numeric(gsub('[[:alpha:]]', '', .rec$coordinateUncertaintyInMeters))
+  feet <- grep('f', .rec$coordinateUncertaintyInMeters)
+=======
   numUnc <- as.numeric(gsub('[[:alpha:]]', '', .rec$coordUncertaintyM))
   feet <- grep('f', .rec$coordUncertaintyM)
+>>>>>>> origin/master
   if (any(feet)){
     .rec$numUnc[feet] <- .rec$numUnc[feet] * .3048
   }
@@ -898,7 +1331,11 @@ dbDuplicate <- function(.rec){
   #   .rec$catalogNumber <- 421  
   #mongoConectRec <- mongo(db = 'records', collection= 'records', url='mongodb://192.168.11.81:27017', verbose = FALSE)
   
+<<<<<<< HEAD
+  dup <- paste0(.rec$acceptedNameUsage, '__', .rec$collectionCode, '--', .rec$catalogNumber)
+=======
   dup <- paste0(.rec$acceptedNameUsage, '__', .rec$collection, '--', .rec$catalogNumber)
+>>>>>>> origin/master
   naCases <- '^NA__|^__|__NA--|__--|--$|--NA$'
   naValue <- grep(naCases, dup)
   if(!any(naValue)){
@@ -1003,6 +1440,17 @@ taxValidation <- function(.recT, origRec){
     .recT$genus <- currentTax$genus
     .recT$specificEpithet <- currentTax$specificEpithet
     .recT$nameAccordingTo <- currentTax$nameAccordingTo
+<<<<<<< HEAD
+    .recT$taxVerifSource <- currentTax$taxVerifSource
+    
+  } else if(mongoCount == 0){
+    
+    vtaxCols <- c('acceptedNameUsage')
+    vtaxCols2 <- c('kingdom', 'phylum', 'class', 'order', 'family')
+    haveAllTaxFields <- all(vtaxCols %in% colnames(origRec))
+    haveAllTaxFieldsFilled <- ifelse(haveAllTaxFields == TRUE, 
+                                     all(origRec[, vtaxCols2] != '' & !is.na(origRec[, vtaxCols2])),
+=======
     .recT$TaxVerifSource <- currentTax$TaxVerifSource
     
   } else if(mongoCount == 0){
@@ -1012,6 +1460,7 @@ taxValidation <- function(.recT, origRec){
     haveAllTaxFields <- all(taxCols %in% colnames(origRec))
     haveAllTaxFieldsFilled <- ifelse(haveAllTaxFields == TRUE, 
                                      all(origRec[, taxCols] != '' & !is.na(origRec[, taxCols])),
+>>>>>>> origin/master
                                      FALSE)
     if(haveAllTaxFields & haveAllTaxFieldsFilled){
       
@@ -1024,7 +1473,11 @@ taxValidation <- function(.recT, origRec){
       set1$specificEpithet <- strsplit(.recT$species, ' ')[[1]][2]
       set1$originalNameUsage <- NULL
       .recT <- cbind(.recT, set1[, -c(1)])
+<<<<<<< HEAD
+      .recT$taxVerifSource <- ifelse(is.na(set1$acceptedNameUsage), NA, "Catalogue of Life 2015")
+=======
       .recT$TaxVerifSource <- ifelse(is.na(set1$acceptedNameUsage), NA, "Catalogue of Life 2015")
+>>>>>>> origin/master
       #       .recT$originalGenus <- strsplit(.recT$species, ' ')[[1]][1]
       #       .recT$originalSpecificEpithet <- strsplit(.recT$species, ' ')[[1]][2]
       .recT$originalSpecificEpithet <- strsplit(.recT$species, ' ')[[1]][2]
@@ -1042,7 +1495,11 @@ taxValidation <- function(.recT, origRec){
       #       .recT$specificEpithet <- .recT$originalSpecificEpithet
       
       .recT$nameAccordingTo <- 'Record author'
+<<<<<<< HEAD
+      .recT$taxVerifSource <- 'Record author'
+=======
       .recT$TaxVerifSource <- 'Record author'
+>>>>>>> origin/master
       
     } else {
       
@@ -1064,7 +1521,11 @@ taxValidation <- function(.recT, origRec){
       
       set1$originalNameUsage <- NULL
       .recT <- cbind(.recT, set1[, -c(1)])
+<<<<<<< HEAD
+      .recT$taxVerifSource <- ifelse(is.na(set1$acceptedNameUsage), NA, "Catalogue of Life 2015")
+=======
       .recT$TaxVerifSource <- ifelse(is.na(set1$acceptedNameUsage), NA, "Catalogue of Life 2015")
+>>>>>>> origin/master
       
       ## Taxize
       #       if(is.na(set1$acceptedNameUsage)){
@@ -1080,7 +1541,11 @@ taxValidation <- function(.recT, origRec){
       #             taxize <- t(taxize$name)
       #             colnames(taxize) <- rankT
       #             .recT[, colnames(taxize)] <- taxize[, colnames(taxize)]
+<<<<<<< HEAD
+      #             .recT$taxVerifSource <- dbs[db]
+=======
       #             .recT$TaxVerifSource <- dbs[db]
+>>>>>>> origin/master
       #             .recT$acceptedNameUsage <- nwRec$species
       #             break
       #           }
@@ -1106,13 +1571,26 @@ taxValidation <- function(.recT, origRec){
       #         .recT$genus <- .recT$originalGenus
       #         .recT$specificEpithet <- .recT$originalSpecificEpithet
       #         .recT$nameAccordingTo <- 'Record author'
+<<<<<<< HEAD
+      #         .recT$taxVerifSource <- 'Record author'
+=======
       #         .recT$TaxVerifSource <- 'Record author'
+>>>>>>> origin/master
       #       }
       
       ## The plant list
       # taxVal <- TPL(.recT$species, corr=TRUE)
     }
   }
+<<<<<<< HEAD
+  .recT$taxonomicStatus[grep('accepted name', .recT$taxonomicStatus)] <- 'accepted'
+  .recT$taxonomicStatus[grep('ambiguous synonym', .recT$taxonomicStatus)] <- ''
+  .recT$taxonomicStatus[grep('misapplied name', .recT$taxonomicStatus)] <- 'misapplied'
+  .recT$taxonomicStatus[grep('provisionally accepted name', .recT$taxonomicStatus)] <- 'provisionally accepted name'
+  .recT$taxonomicStatus[grep('synonym', .recT$taxonomicStatus)] <- 'synonym'
+ 
+=======
+>>>>>>> origin/master
   return(.recT)
 }
 
@@ -1124,7 +1602,11 @@ withCoords <- function(.recG){
 
 geoValidation <- function(.recG, .scriptMaxchar = .2){  
   .recG$geoID <- 1:nrow(.recG)
+<<<<<<< HEAD
+  coords <- .recG[, c('lon', 'lat', 'geoID', 'country', 'stateProvince', 'county')]
+=======
   coords <- .recG[, c('lon', 'lat', 'geoID', 'country', 'adm1', 'adm2')]
+>>>>>>> origin/master
   coordinates(coords) =~ lon + lat
   coords@proj4string@projargs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   
@@ -1133,7 +1615,11 @@ geoValidation <- function(.recG, .scriptMaxchar = .2){
   } 
   
   system.time(Extract <- raster::extract(mpios, coords)) # 3.9 vs.1.46
+<<<<<<< HEAD
+  Extract[, c('country', 'stateProvince', 'county')] <- .recG[match(Extract$point.ID, .recG$geoID), c('country', 'stateProvince', 'county')]
+=======
   Extract[, c('country', 'adm1', 'adm2')] <- .recG[match(Extract$point.ID, .recG$geoID), c('country', 'adm1', 'adm2')]
+>>>>>>> origin/master
   
   if(nrow(.recG) == 1){
     Extract <- Extract[Extract$point.ID == 1, ]
@@ -1172,7 +1658,11 @@ geoValidation <- function(.recG, .scriptMaxchar = .2){
     }
     
     ##
+<<<<<<< HEAD
+    dept0 <- corroboracion(overPointsField = x0$DPTOS, dataField = x0$stateProvince, 
+=======
     dept0 <- corroboracion(overPointsField = x0$DPTOS, dataField = x0$adm1, 
+>>>>>>> origin/master
                            dataID = x0$geoID, maxchar = .scriptMaxchar)
     posDept <- which( x0$date == max(x0$date[dept0[[1]]]))
     suggestedStateProvince <- x0$DPTOS[which.max(x0$date)]
@@ -1189,7 +1679,11 @@ geoValidation <- function(.recG, .scriptMaxchar = .2){
     
     
     ##
+<<<<<<< HEAD
+    mun0 <- corroboracion(overPointsField = x0$MPIOS, dataField = x0$county, 
+=======
     mun0 <- corroboracion(overPointsField = x0$MPIOS, dataField = x0$adm2, 
+>>>>>>> origin/master
                           dataID = x0$geoID, maxchar = .scriptMaxchar)
     posMun <- which( x0$date == max(x0$date[mun0[[1]]]))
     suggestedCounty <- x0$MPIOS[which.max(x0$date)]
@@ -1508,7 +2002,11 @@ genusValidation <- function(con,inTable){
   #                                                gsub(4, 'Provisionally accepted name',
   #                                                     gsub(5, 'Synonym',  finalTable$taxonomicStatus)))))
   
+<<<<<<< HEAD
+  return(finalTable)
+=======
   return(finalTabl||e)
+>>>>>>> origin/master
 }
 
 cleanSciNames <- function(y){ 
@@ -1608,7 +2106,11 @@ updateFlags <- function(.acceptedNameUsage = 'NA',
   # .acceptedNameUsage = 'Zamia tolimensis'; .acceptedNameUsage = 'Atelopus muisca'
   
   mT <- mongoConectRec$find(paste0('{"species":"', .acceptedNameUsage, '"}'),
+<<<<<<< HEAD
+                            fields = '{"_id" : 1, "lat" : 1, "lon" : 1, "demAltitude": 1, "interpretedElevation":1, "verbatimElevation": 1}')
+=======
                             fields = '{"_id" : 1, "lat" : 1, "lon" : 1, "demAltitude": 1, "interpretedElevation":1, "alt": 1}')
+>>>>>>> origin/master
   mT <- mT[which(!is.na(mT$lat) & !is.na(mT$lon)), ]
   if(nrow(mT) > 1){
     coordSpatial <- SpatialPoints(mT[, c('lon', 'lat')], proj4string = CRS("+proj=longlat +datum=WGS84"))
@@ -1629,7 +2131,11 @@ updateFlags <- function(.acceptedNameUsage = 'NA',
     }
     
     if('diferenceInAltitude' %in% .flags){
+<<<<<<< HEAD
+      mT$diferenceInAltitude <- abs(as.numeric(mT$demAltitude) - as.numeric(mT$verbatimElevation))
+=======
       mT$diferenceInAltitude <- abs(as.numeric(mT$demAltitude) - as.numeric(mT$alt))
+>>>>>>> origin/master
       mT$diferenceInAltitude[is.na(mT$diferenceInAltitude)] <- 'NULL'
     }
     
